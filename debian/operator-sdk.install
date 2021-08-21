@@ -1,0 +1,4 @@
+usr/bin/ansible-operator
+usr/bin/helm-operator
+usr/bin/operator-sdk
+usr/share/bash-completion/completions/operator-sdk
