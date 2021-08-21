@@ -1,0 +1,35 @@
+#!/usr/bin/make -f
+
+SHEEL := /bin/bash
+
+override_dh_auto_build:
+	mkdir -p bin
+	set -ex && \
+		export CGO_ENABLED=1 && \
+		go build \
+			-mod vendor -buildmode pie -v \
+			-ldflags "-s -w" \
+			-o ./bin/operator-sdk ./cmd/operator-sdk && \
+		go build \
+			-mod vendor -buildmode pie -v \
+			-ldflags "-s -w" \
+			-o ./bin/ansible-operator ./cmd/ansible-operator && \
+		go build \
+			-mod vendor -buildmode pie -v \
+			-ldflags "-s -w" \
+			-o ./bin/helm-operator ./cmd/helm-operator
+
+override_dh_auto_install:
+	install -Dpm755 -d debian/tmp/usr/bin
+	install -Dpm755 -d debian/tmp/usr/share/bash-completion/completions
+	install -Dpm755 -t debian/tmp/usr/bin bin/ansible-operator
+	install -Dpm755 -t debian/tmp/usr/bin bin/helm-operator
+	install -Dpm755 -t debian/tmp/usr/bin bin/operator-sdk
+	./bin/operator-sdk completion bash > debian/tmp/usr/share/bash-completion/completions/operator-sdk
+
+override_dh_auto_test:
+
+override_dh_auto_clean:
+
+%:
+	dh $@
