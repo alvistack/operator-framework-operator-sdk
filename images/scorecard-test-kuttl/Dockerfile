@@ -1,5 +1,5 @@
 # Build the scorecard-test-kuttl binary
-FROM --platform=$BUILDPLATFORM golang:1.16 as builder
+FROM --platform=$BUILDPLATFORM golang:1.19.2 as builder
 ARG TARGETARCH
 
 WORKDIR /workspace
