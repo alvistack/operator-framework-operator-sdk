@@ -1,0 +1,5 @@
+operator-sdk (100:1.28.0-1) UNRELEASED; urgency=medium
+
+  * https://github.com/operator-framework/operator-sdk/releases/tag/v1.28.0
+
+ -- Wong Hoi Sing Edison <hswong3i@pantarei-design.com>  Wed, 15 Mar 2023 12:17:36 +0800

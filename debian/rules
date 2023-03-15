@@ -1,0 +1,53 @@
+#!/usr/bin/make -f
+
+SHEEL := /bin/bash
+
+override_dh_auto_build:
+	mkdir -p bin
+	set -ex && \
+		export CGO_ENABLED=1 && \
+		go build \
+			-mod vendor -buildmode pie -v \
+			-ldflags "-s -w \
+				-X github.com/operator-framework/operator-sdk/internal/version.Version=v1.28.0 \
+				-X github.com/operator-framework/operator-sdk/internal/version.GitVersion=v1.28.0 \
+				-X github.com/operator-framework/operator-sdk/internal/version.GitCommit=484013d1865c35df2bc5dfea0ab6ea6b434adefa \
+				-X github.com/operator-framework/operator-sdk/internal/version.KubernetesVersion=v1.26.0 \
+				-X github.com/operator-framework/operator-sdk/internal/version.ImageVersion=v1.28.0 \
+			" \
+			-o ./bin/operator-sdk ./cmd/operator-sdk && \
+		go build \
+			-mod vendor -buildmode pie -v \
+			-ldflags "-s -w \
+				-X github.com/operator-framework/operator-sdk/internal/version.Version=v1.28.0 \
+				-X github.com/operator-framework/operator-sdk/internal/version.GitVersion=v1.28.0 \
+				-X github.com/operator-framework/operator-sdk/internal/version.GitCommit=484013d1865c35df2bc5dfea0ab6ea6b434adefa \
+				-X github.com/operator-framework/operator-sdk/internal/version.KubernetesVersion=v1.26.0 \
+				-X github.com/operator-framework/operator-sdk/internal/version.ImageVersion=v1.28.0 \
+			" \
+			-o ./bin/ansible-operator ./cmd/ansible-operator && \
+		go build \
+			-mod vendor -buildmode pie -v \
+			-ldflags "-s -w \
+				-X github.com/operator-framework/operator-sdk/internal/version.Version=v1.28.0 \
+				-X github.com/operator-framework/operator-sdk/internal/version.GitVersion=v1.28.0 \
+				-X github.com/operator-framework/operator-sdk/internal/version.GitCommit=484013d1865c35df2bc5dfea0ab6ea6b434adefa \
+				-X github.com/operator-framework/operator-sdk/internal/version.KubernetesVersion=v1.26.0 \
+				-X github.com/operator-framework/operator-sdk/internal/version.ImageVersion=v1.28.0 \
+			" \
+			-o ./bin/helm-operator ./cmd/helm-operator
+
+override_dh_auto_install:
+	install -Dpm755 -d debian/tmp/usr/bin
+	install -Dpm755 -d debian/tmp/usr/share/bash-completion/completions
+	install -Dpm755 -t debian/tmp/usr/bin bin/*
+	./bin/ansible-operator completion bash > debian/tmp/usr/share/bash-completion/completions/ansible-operator
+	./bin/helm-operator completion bash > debian/tmp/usr/share/bash-completion/completions/helm-operator
+	./bin/operator-sdk completion bash > debian/tmp/usr/share/bash-completion/completions/operator-sdk
+
+override_dh_auto_test:
+
+override_dh_auto_clean:
+
+%:
+	dh $@
