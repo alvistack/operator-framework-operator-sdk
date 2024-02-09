@@ -1,0 +1,42 @@
+#!/usr/bin/make -f
+
+SHEEL := /bin/bash
+
+override_dh_auto_build:
+	mkdir -p bin
+	set -ex && \
+		export CGO_ENABLED=1 && \
+		go build \
+			-mod vendor -buildmode pie -v \
+			-ldflags "-s -w \
+				-X github.com/operator-framework/operator-sdk/internal/version.Version=v1.34.2 \
+				-X github.com/operator-framework/operator-sdk/internal/version.GitVersion=v1.34.2 \
+				-X github.com/operator-framework/operator-sdk/internal/version.GitCommit=81dd3cb24b8744de03d312c1ba23bfc617044005 \
+				-X github.com/operator-framework/operator-sdk/internal/version.KubernetesVersion=v1.28.0 \
+				-X github.com/operator-framework/operator-sdk/internal/version.ImageVersion=v1.34.2 \
+			" \
+			-o ./bin/operator-sdk ./cmd/operator-sdk && \
+		go build \
+			-mod vendor -buildmode pie -v \
+			-ldflags "-s -w \
+				-X github.com/operator-framework/operator-sdk/internal/version.Version=v1.34.2 \
+				-X github.com/operator-framework/operator-sdk/internal/version.GitVersion=v1.34.2 \
+				-X github.com/operator-framework/operator-sdk/internal/version.GitCommit=81dd3cb24b8744de03d312c1ba23bfc617044005 \
+				-X github.com/operator-framework/operator-sdk/internal/version.KubernetesVersion=v1.28.0 \
+				-X github.com/operator-framework/operator-sdk/internal/version.ImageVersion=v1.34.2 \
+			" \
+			-o ./bin/helm-operator ./cmd/helm-operator
+
+override_dh_auto_install:
+	install -Dpm755 -d debian/tmp/usr/bin
+	install -Dpm755 -d debian/tmp/usr/share/bash-completion/completions
+	install -Dpm755 -t debian/tmp/usr/bin bin/*
+	./bin/helm-operator completion bash > debian/tmp/usr/share/bash-completion/completions/helm-operator
+	./bin/operator-sdk completion bash > debian/tmp/usr/share/bash-completion/completions/operator-sdk
+
+override_dh_auto_test:
+
+override_dh_auto_clean:
+
+%:
+	dh $@
