@@ -1,0 +1,4 @@
+operator-sdk: copyright-without-copyright-notice
+operator-sdk: initial-upload-closes-no-bugs
+operator-sdk: no-manual-page
+operator-sdk: zero-byte-file-in-doc-directory
